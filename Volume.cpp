@@ -597,8 +597,9 @@ int Volume::mountVol() {
 
         protectFromAutorunStupidity();
 
+        // Engle, 这个有点奇怪，移至SD卡一般理解都是诺到外置存储并且一般都不是主存储，修改判断条件
         // only create android_secure on primary storage
-        if (primaryStorage && createBindMounts()) {
+        if (!primaryStorage && createBindMounts()) {
             SLOGE("Failed to create bindmounts (%s)", strerror(errno));
             umount("/mnt/secure/staging");
             setState(Volume::State_Idle);
@@ -849,8 +850,9 @@ int Volume::unmountVol(bool force, bool revert) {
     setState(Volume::State_Unmounting);
     usleep(1000 * 1000); // Give the framework some time to react
 
+    // Engle, 这个有点奇怪，移至SD卡一般理解都是诺到外置存储并且一般都不是主存储，修改判断条件
     /* Undo createBindMounts(), which is only called for primary storage */
-    if (isPrimaryStorage()) {
+    if (!isPrimaryStorage()) {
         /*
          * Remove the bindmount we were using to keep a reference to
          * the previously obscured directory.

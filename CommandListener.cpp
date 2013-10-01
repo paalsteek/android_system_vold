@@ -301,8 +301,9 @@ void CommandListener::AsecCmd::listAsecsInDirectory(SocketClient *cli, const cha
     while (!readdir_r(d, dent, &result) && result != NULL) {
         if (dent->d_name[0] == '.')
             continue;
-        if (dent->d_type != DT_REG)
-            continue;
+        // Engle, 如果为exfat分区无法正确得到文件类型, 暂时先注释掉，会使安装到sd卡的应用无法挂载
+        // if (dent->d_type != DT_REG)
+        //    continue;
         size_t name_len = strlen(dent->d_name);
         if (name_len > 5 && name_len < 260 &&
                 !strcmp(&dent->d_name[name_len - 5], ".asec")) {
